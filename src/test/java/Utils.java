@@ -5,7 +5,7 @@ import org.openqa.selenium.WebElement;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
-    static final String CHROME_DRIVER_LOCATION = "chromedriver";
+    static final String CHROME_DRIVER_LOCATION = "geckodriver";
     static final String BASE_URL = "https://altex.ro/home/";
 
     public static void waitForElementToLoad(int timeUnit) {
@@ -16,7 +16,7 @@ public class Utils {
         }
     }
 
-    public static void waitForElement(WebDriver driver, WebElement element) {
+    public static void scrollToElement(WebDriver driver, WebElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
         waitForElementToLoad(3);
     }

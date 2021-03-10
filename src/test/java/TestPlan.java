@@ -9,7 +9,9 @@ public class TestPlan {
     private static final WebDriver driver = new ChromeDriver();
 
     @BeforeSuite
-    public static void main(String[] args) { System.setProperty("webdriver.chrome.driver", "chromedriver"); }
+    public static void main(String[] args) {
+        System.setProperty("webdriver.firefox.driver", "geckodriver");
+    }
 
     @Test(testName = "Search product")
     public static void searchForProduct() {
@@ -20,6 +22,17 @@ public class TestPlan {
         Utils.waitForElementToLoad(2);
         SecondPage secondPage = new SecondPage(driver);
         Assert.assertEquals(secondPage.getResultsHeader(), "Rezultate cautare : Telefoane");
+    }
+
+    @Test(testName = "Search for invalid product")
+    public static void SearchForInvalidProduct() {
+        driver.get(Utils.BASE_URL);
+        FirstPage webForm = new FirstPage(driver);
+        webForm.populateSearchFieldWithInvalidProduct();
+        webForm.clickOnSearchButton();
+        Utils.waitForElementToLoad(2);
+        SecondPage secondPage = new SecondPage(driver);
+        Assert.assertEquals(secondPage.getResultsInvalidHeader(), "Nu au fost gasite produse conform criteriilor selectate.");
     }
 
     @Test(testName = "Daily offer products")
@@ -42,7 +55,7 @@ public class TestPlan {
     }
 
     @Test(testName = "Click on brand from brandlist")
-    public  static void clickOnBrandFromList() {
+    public static void clickOnBrandFromList() {
         driver.get(Utils.BASE_URL);
         navigateToBrandsPage();
         BrandsPage brandsPage = new BrandsPage(driver);
@@ -59,6 +72,64 @@ public class TestPlan {
         FirstPage webForm = new FirstPage(driver);
         Assert.assertEquals(webForm.getMottoHeader(), "Cel mai mic pret din Romania! Daca gasesti in alta parte mai ieftin primesti de doua ori diferenta.");
     }
+
+    @Test(testName = "Add product to cart")
+    public static void AddProductToCart() {
+        driver.get(Utils.BASE_URL);
+        FirstPage webForm = new FirstPage(driver);
+        Utils.waitForElementToLoad(3);
+        webForm.clickOnFirstProductOfDailyOffer();
+        Utils.waitForElementToLoad(3);
+        ProductPage productForm = new ProductPage(driver);
+        productForm.addProductToCart();
+        Utils.waitForElementToLoad(3);
+        Assert.assertEquals(productForm.getAddToCartHeader(), "Produsul a fost adaugat in cosul de cumparaturi");
+    }
+
+    @Test(testName = "Verify empty cart")
+    public void VerifyEmptyCart() {
+        driver.get(Utils.BASE_URL);
+        FirstPage webForm = new FirstPage(driver);
+        webForm.clickOnCart();
+        Utils.waitForElementToLoad(2);
+        Assert.assertEquals(webForm.getEmptyCartPopUp(), "Nu exista produse.");
+    }
+
+    @Test(testName = "Remove item from cart")
+    public void RemoveFromCart() {
+        driver.get(Utils.BASE_URL);
+        FirstPage webForm = new FirstPage(driver);
+        Utils.waitForElementToLoad(3);
+        webForm.clickOnFirstProductOfDailyOffer();
+        Utils.waitForElementToLoad(3);
+        ProductPage productForm = new ProductPage(driver);
+        productForm.addProductToCart();
+        Utils.waitForElementToLoad(3);
+        productForm.clickOnPopUpButton();
+        productForm.clickOnCart();
+        productForm.clickClickOnViewCart();
+        CartPage cartForm = new CartPage(driver);
+        Utils.waitForElementToLoad(3);
+        cartForm.clickEmptyCart();
+        Utils.waitForElementToLoad(2);
+        Assert.assertEquals(cartForm.getCartHeader(), "Nu ai produse in cos.");
+    }
+
+
+    @Test(testName = "Login Page")
+    public static void LoginPage () {
+        driver.get(Utils.BASE_URL);
+        LoginPage webForm = new LoginPage(driver);
+        webForm.searchLoginButton();
+        webForm.populateSearchEmail();
+        Utils.waitForElementToLoad(3);
+        webForm.populateSearchPassword();
+        Utils.waitForElementToLoad(3);
+        webForm.searchAuthenticationButton();
+        Utils.waitForElementToLoad(7);
+    }
+
+
 
     @AfterSuite
     public static void cleanUp() {
@@ -77,7 +148,4 @@ public class TestPlan {
         Utils.waitForElementToLoad(3);
     }
 
-    private static void navigateToSecondPage() {
-
-    }
 }
